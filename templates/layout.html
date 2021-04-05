@@ -57,7 +57,7 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="navbar-collapse collapse" id="navbarColor02">
+      <div class="navbar-collapse collapse" id="navbarColor02" style="">
         {% if session.user_id %}
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
@@ -114,5 +114,6 @@
     <main class="container p-5 text-center">
       {% block main %}{% endblock %}
     </main>
+    </footer>
   </body>
 </html>

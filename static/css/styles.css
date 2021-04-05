@@ -69,3 +69,8 @@ main img {
   padding-bottom: 0.5rem;
   padding-left: 0.2rem;
 }
+
+body {
+  background-color: #000000;
+  color: white;
+}
