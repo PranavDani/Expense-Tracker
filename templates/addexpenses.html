@@ -1,0 +1,115 @@
+{% extends "layout.html" %} {% block styles %}
+<link href="/static/css/expenses.css" rel="stylesheet" />
+{% endblock %} {% block title %} Add Expenses {% endblock %} {% block main %}
+<h1>Add Expenses</h1>
+<br />
+<p>
+  <small class="card-title text-light"
+    >Tip: Delete a row by clicking/tapping the row number in the '#' column and
+    then clicking/tapping the 'Delete Row' button. Must have at least 2
+    rows.</small
+  >
+</p>
+
+<form action="/addexpenses" method="post" id="expenseForm" autocomplete="off">
+  <div class="table-responsive-sm">
+    <table id="expenseTable" class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Description</th>
+          <th scope="col">Category</th>
+          <th scope="col">Date</th>
+          <th scope="col">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td onclick="selectRow(this);">
+            1 <i class="far fa-hand-pointer"></i><br />
+          </td>
+          <td>
+            <textarea
+              class="form-control-sm"
+              name="description.1"
+              form="expenseForm"
+              required
+              maxlength="200"
+              autofocus
+            ></textarea>
+          </td>
+          <td>
+            <select
+              id="category"
+              class="form-control-sm"
+              name="category.1"
+              form="expenseForm"
+              required
+            >
+              {% for category in categories %}
+              <option value="{{ category['name'] }}">
+                {{ category['name'] }}
+              </option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <input
+              type="date"
+              class="form-control-sm"
+              name="date.1"
+              form="expenseForm"
+              required
+              value="{{ date }}"
+            />
+          </td>
+          <td>
+            <!-- Modified RegEx from Gary @ StackOverflow: https://stackoverflow.com/a/16242575 -->
+            <!-- TODO: change input type from 'text' to 'number' to remove the need for regex? Look at my implementation on budgets.html and use the same thing here -->
+            <input
+              type="text"
+              class="form-control-sm"
+              name="amount.1"
+              form="expenseForm"
+              size="10"
+              placeholder="₹"
+              required
+              maxlength="10"
+              pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$"
+              title="Format must be currency value without dollar sign or commas e.g. 1, 2.50, 1500.75"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br />
+  <button
+    type="button"
+    id="btnNewRow"
+    class="btn btn-primary"
+    onclick="addRow();"
+  >
+    New Row
+  </button>
+  <button
+    type="button"
+    id="btnDeleteRow"
+    class="btn btn-danger"
+    onclick="removeRow(selectedRow);"
+    disabled
+  >
+    Delete Row
+  </button>
+  <button type="submit" id="btnExpense" class="btn btn-success">Save</button>
+</form>
+<br />
+
+<script src="/static/js/addexpenses.js"></script>
+<script>
+  var categoryData = JSON.stringify({{ categories | tojson }});
+  var dateData = "{{ date }}";
+
+  loadData(categoryData, dateData);
+</script>
+{% endblock %}

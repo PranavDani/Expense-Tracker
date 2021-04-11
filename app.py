@@ -1,6 +1,8 @@
 import requests
 import psycopg2
 import os
+import expenses
+import e_categories
 
 from flask_sqlalchemy import sqlalchemy
 from flask import Flask, jsonify, redirect, render_template, request, session
@@ -139,7 +141,7 @@ def logout():
 @app.route("/")
 @login_required
 def home():
-    # if session.user_id
+    # if session.user_id pending
     return render_template("layout.html")
 
 
@@ -148,6 +150,19 @@ def home():
 def expenses():
     """Manage Expenses"""
     return render_template("expenses.html")
+
+
+@app.route("/addexpenses", methods=["GET", "POST"])
+@login_required
+def addexpenses():
+    """Add expenses"""
+
+    if request.method == "POST":
+        """TODO"""
+    else:
+        categories = e_categories.getSpendCategories(session["user_id"])
+        date = datetime.today().strftime("%Y-%m-%d")
+        return render_template("addexpenses.html", categories=categories, date=date)
 
 
 if __name__ == "__main__":

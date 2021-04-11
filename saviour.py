@@ -49,7 +49,7 @@ def login_required(f):
 
 
 def usd(value):
-    """Format value as USD."""
+    """Format value as Rupee."""
     return f"₹{value:,.2f}"
 
 
