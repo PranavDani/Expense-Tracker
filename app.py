@@ -1,7 +1,7 @@
 import requests
 import psycopg2
 import os
-import expenses
+import e_expenses
 import e_categories
 
 from flask_sqlalchemy import sqlalchemy
@@ -156,9 +156,14 @@ def expenses():
 @login_required
 def addexpenses():
     """Add expenses"""
+    """Issue of multiple inputs is fixed"""
 
     if request.method == "POST":
-        """TODO"""
+        formData = list(request.form.items())
+        print(formData)
+        expenses = e_expenses.addExpenses(formData, session["user_id"])
+        return render_template("expensed.html", results=expenses)
+
     else:
         categories = e_categories.getSpendCategories(session["user_id"])
         date = datetime.today().strftime("%Y-%m-%d")

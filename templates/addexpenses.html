@@ -16,16 +16,16 @@
     <table id="expenseTable" class="table table-hover">
       <thead>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Description</th>
-          <th scope="col">Category</th>
-          <th scope="col">Date</th>
-          <th scope="col">Amount</th>
+          <th class="card-title text-light" scope="col">#</th>
+          <th class="card-title text-light" scope="col">Description</th>
+          <th class="card-title text-light" scope="col">Category</th>
+          <th class="card-title text-light" scope="col">Date</th>
+          <th class="card-title text-light" scope="col">Amount</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td onclick="selectRow(this);">
+          <td class="card-title text-light" onclick="selectRow(this);">
             1 <i class="far fa-hand-pointer"></i><br />
           </td>
           <td>
@@ -76,7 +76,7 @@
               required
               maxlength="10"
               pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$"
-              title="Format must be currency value without dollar sign or commas e.g. 1, 2.50, 1500.75"
+              title="Format must be currency value without signs or commas e.g. 1, 2.50, 1500.75"
             />
           </td>
         </tr>
