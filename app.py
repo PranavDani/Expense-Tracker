@@ -138,11 +138,26 @@ def logout():
     return redirect("/")
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
-def home():
+def index():
     # if session.user_id pending
-    return render_template("layout.html")
+    # return render_template("layout.html")
+    """Addition of more stuff is remaining"""
+    if request.method == "GET":
+        # Get the users spend categories (for quick expense modal)
+        categories = e_categories.getSpendCategories(session["user_id"])
+        # Get todays date (for quick expense modal)
+        date = datetime.today().strftime("%Y-%m-%d")
+        return render_template("index.html", categories=categories, date=date)
+
+    else:
+        # Get all of the expenses provided from the HTML form
+        formData = list(request.form.items())
+        # Add expenses to the DB for user
+        expenses = e_expenses.addExpenses(formData, session["user_id"])
+        # Redirect to results page and render a summary of the submitted expenses
+        return render_template("expensed.html", results=expenses)
 
 
 @app.route("/expenses")
@@ -160,7 +175,6 @@ def addexpenses():
 
     if request.method == "POST":
         formData = list(request.form.items())
-        print(formData)
         expenses = e_expenses.addExpenses(formData, session["user_id"])
         return render_template("expensed.html", results=expenses)
 
