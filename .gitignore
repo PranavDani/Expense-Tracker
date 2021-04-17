@@ -3,3 +3,4 @@
 /__pycache__
 .pylintrc
 readmyself.md
+/flask_session

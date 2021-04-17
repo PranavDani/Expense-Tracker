@@ -117,8 +117,19 @@
 <div class="container">
   <!--Expense section-->
   <div class="row">
+    <div class="col-12">
+      <h2 style="text-align: left">Your Expenses</h2>
+    </div>
+  </div>
+  {% if expenses_year %}
+  <div class="row">
     <div class="col"></div>
   </div>
+  {% else %}
+  <p style="text-align: left">
+    <small class="text-muted">You have no expenses yet.</small>
+  </p>
+  {% endif %}
 </div>
 
 {% endblock %}

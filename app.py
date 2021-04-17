@@ -149,6 +149,7 @@ def index():
         categories = e_categories.getSpendCategories(session["user_id"])
         # Get todays date (for quick expense modal)
         date = datetime.today().strftime("%Y-%m-%d")
+        expenses_year = e_expenses.getTotalSpend_Year(session["user_id"])
         return render_template("index.html", categories=categories, date=date)
 
     else:
@@ -182,6 +183,46 @@ def addexpenses():
         categories = e_categories.getSpendCategories(session["user_id"])
         date = datetime.today().strftime("%Y-%m-%d")
         return render_template("addexpenses.html", categories=categories, date=date)
+
+
+@app.route("/expensehistory", methods=["GET", "POST"])
+@login_required
+def expensehistory():
+    if request.method == "GET":
+        history = e_expenses.getHistory(session["user_id"])
+        categories = e_categories.getSpendCategories(session["user_id"])
+        return render_template("expensehistory.html", history=history, categories=categories, isDeleteAlert=False)
+
+    else:
+        userHasSelected_deleteExpense = False
+        if "btnDeleteConfirm" in request.form:
+            userHasSelected_deleteExpense = True
+        elif "btnSave" in request.form:
+            userHasSelected_deleteExpense = False
+        else:
+            return apology("Bro, idk what's happening")
+
+        oldExpense = e_expenses.getExpense(request.form, session["user_id"])
+
+        if oldExpense["id"] == None:
+            return apology("The expense record you're trying to update doesn't exist")
+
+        if userHasSelected_deleteExpense == True:
+            deleted = e_expenses.deleteExpense(oldExpense, session["user_id"])
+            if not deleted:
+                return apology("This expense was not able to be deleted")
+
+            history = e_expenses.getHistory(session["user_id"])
+            categories = e_categories.getSpendCategories(session["user_id"])
+            return render_template("expensehistory.html", history=history, categories=categories, isDeleteAlert=True)
+
+        else:
+            expensed = e_expenses.updateExpense(oldExpense, request.form, session["user_id"])
+            if not expensed:
+                return apology("The expense was unable to be updated")
+
+            # Redirect to results page and render a summary of the updated expense
+            return render_template("expensed.html", results=expensed)
 
 
 if __name__ == "__main__":

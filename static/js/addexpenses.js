@@ -15,7 +15,7 @@ function loadData(categoryData, dateData) {
 function addRow() {
   // Build the HTML string for a new row
   let newRow =
-    "<tr> <td class='card-title text-light' onclick='selectRow(this);'<i class='far fa-hand-pointer'></i>><br></td><td><textarea class='form-control-sm' name='description.' form='expenseForm' required maxlength='200'></textarea></td><td><select class='form-control-sm' name='category.' form='expenseForm' required'>";
+    "<tr> <td class='card-title text-light' onclick='selectRow(this);'<i class='far fa-hand-pointer'></i><br></td><td><textarea class='form-control-sm' name='description.' form='expenseForm' required maxlength='200'></textarea></td><td><select class='form-control-sm' name='category.' form='expenseForm' required'>";
 
   // Loop through the categories
   for (i = 0; i < categories.length; i++) {
@@ -70,7 +70,7 @@ function updateTableElements(rowCount) {
       String(i + 1) + " <i class='far fa-hand-pointer'></i>";
 
     // Update the element names so every element in a row is numbered correctly/uniquely and can be sent to server via POST
-    for (let j = 0; j < 5; j++) {
+    for (let j = 0; j < 4; j++) {
       let oldName =
         table.children[1].children[i].children[j + 1].firstElementChild.name;
       let n = oldName.indexOf(".");
