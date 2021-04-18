@@ -85,11 +85,58 @@ def getTotalSpend_Year(userID):
     results = db.execute(
         "SELECT SUM(amount) AS expenses_year FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = date_part('year', CURRENT_DATE)",
         {"usersID": userID},
+        # Source = https://www.postgresqltutorial.com/postgresql-date_part/
     ).fetchall()
 
     totalSpendYear = convertSQLToDict(results)
 
     return totalSpendYear[0]["expenses_year"]
+
+
+# Get and return the users total spend for the current month
+def getTotalSpend_Month(userID):
+    results = db.execute(
+        "SELECT SUM(amount) AS expenses_month FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = date_part('year', CURRENT_DATE) AND date_part('month', date(expensedate)) = date_part('month', CURRENT_DATE)",
+        {"usersID": userID},
+    ).fetchall()
+
+    totalSpendMonth = convertSQLToDict(results)
+
+    return totalSpendMonth[0]["expenses_month"]
+
+
+def getTotalSpend_Week(userID):
+    # Query note: Day 0 of a week == Sunday. This query grabs expenses between the *current* weeks Monday and Sunday.
+    results = db.execute(
+        "SELECT SUM(amount) AS expenses_week FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = date_part('year', CURRENT_DATE) AND date_part('week', date(expensedate)) = date_part('week', CURRENT_DATE)",
+        {"usersID": userID},
+    ).fetchall()
+
+    totalSpendWeek = convertSQLToDict(results)
+
+    return totalSpendWeek[0]["expenses_week"]
+
+
+# Get the users total income
+def getIncome(userID):
+    income = db.execute("SELECT income FROM users WHERE id = :usersID", {"usersID": userID}).fetchone()[0]
+
+    return float(income)
+
+
+# Get and return the users last 5 expenses
+def getLastFiveExpenses(userID):
+    results = db.execute(
+        "SELECT description, category, expenseDate, amount FROM expenses WHERE user_id = :usersID ORDER BY id DESC LIMIT 5",
+        {"usersID": userID},
+    ).fetchall()
+
+    lastFiveExpenses = convertSQLToDict(results)
+
+    if lastFiveExpenses:
+        return lastFiveExpenses
+    else:
+        return None
 
 
 # Delete existing expense

@@ -10,6 +10,8 @@
   rel="stylesheet"
 />
 <link href="/static/css/expenses.css" type="text/css" rel="stylesheet" />
+<link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
+
 {% endblock %} {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
@@ -30,7 +32,7 @@
 </div>
 {% endif %} {% if history %}
 <!--Table functionality courtesty of DataTables.net-->
-<table id="expenses" class="display text-dark" style="width: 100%">
+<table id="expenses" class="display text-light" style="width: 100%">
   <thead>
     <tr>
       <th>#</th>
@@ -40,7 +42,7 @@
       <th>Amount</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="display text-dark">
     {% for result in history %}
     <tr>
       <td>{{ loop.index }}</td>

@@ -145,13 +145,39 @@ def index():
     # return render_template("layout.html")
     """Addition of more stuff is remaining"""
     if request.method == "GET":
+        expenses_year = None
+        expenses_month = None
+        expenses_week = None
         # Get the users spend categories (for quick expense modal)
         categories = e_categories.getSpendCategories(session["user_id"])
+
+        income = e_expenses.getIncome(session["user_id"])
+
+        expenses_year = e_expenses.getTotalSpend_Year(session["user_id"])
+
+        # Get current months total expenses for the user
+        expenses_month = e_expenses.getTotalSpend_Month(session["user_id"])
+
+        # Get current week total expenses for the user
+        expenses_week = e_expenses.getTotalSpend_Week(session["user_id"])
+
+        expenses_last5 = e_expenses.getLastFiveExpenses(session["user_id"])
+
         # Get todays date (for quick expense modal)
         date = datetime.today().strftime("%Y-%m-%d")
-        expenses_year = e_expenses.getTotalSpend_Year(session["user_id"])
-        return render_template("index.html", categories=categories, date=date)
 
+        return render_template(
+            "index.html",
+            categories=categories,
+            date=date,
+            income=income,
+            expenses_year=expenses_year,
+            expenses_month=expenses_month,
+            expenses_week=expenses_week,
+            expenses_last5=expenses_last5,
+        )
+
+    # Post Method for the modal
     else:
         # Get all of the expenses provided from the HTML form
         formData = list(request.form.items())
