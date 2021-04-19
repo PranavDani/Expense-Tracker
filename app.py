@@ -312,5 +312,34 @@ def updateaccount():
         )
 
 
+@app.route("/reports", methods=["GET"])
+@login_required
+def reports():
+    """View reports"""
+
+    return render_template("reports.html")
+
+
+@app.route("/monthlyreport", methods=["GET"])
+@app.route("/monthlyreport/<int:year>", methods=["GET"])
+@login_required
+def monthlyreport(year=None):
+    """View monthly spending report"""
+
+    # Make sure the year from route is valid
+    if year:
+        currentYear = datetime.now().year
+        if not 2021 <= year <= currentYear:
+            return apology(f"Please select a valid budget year: 2021 through {currentYear}")
+    else:
+        # Set year to current year if it was not in the route (this will set UX to display current years report)
+        year = datetime.now().year
+
+    # Generate a data structure that combines the users monthly spending data needed for chart and table
+    monthlySpending = e_expenses.generateMonthlyReport(session["user_id"], year)
+
+    return render_template("monthlyreport.html", monthlySpending=monthlySpending, year=year)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

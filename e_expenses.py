@@ -1,5 +1,6 @@
 import requests
 import psycopg2
+import calendar
 import os
 
 from flask_sqlalchemy import sqlalchemy
@@ -233,6 +234,51 @@ def updateExpense(oldExpense, formData, userID):
         return expenses
     else:
         return None
+
+
+def generateMonthlyReport(userID, year=None):
+
+    # Default to getting current years reports
+    if not year:
+        year = datetime.now().year
+
+    # Create data structure to hold users monthly spending data for the chart (monthly summed data)
+    spending_month_chart = getMonthlySpending(userID, year)
+
+    # Get the spending data from DB for the table (individual expenses per month)
+    results = db.execute(
+        "SELECT description, category, expensedate, amount FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year ORDER BY id ASC",
+        {"usersID": userID, "year": year},
+    ).fetchall()
+    spending_month_table = convertSQLToDict(results)
+
+    # Combine both data points (chart and table) into a single data structure
+    monthlyReport = {"chart": spending_month_chart, "table": spending_month_table}
+
+    return monthlyReport
+
+
+def getMonthlySpending(userID, year=None):
+    spending_month = []
+    month = {"name": None, "amount": None}
+
+    # Default to getting current years spending
+    if not year:
+        year = datetime.now().year
+
+    results = db.execute(
+        "SELECT date_part('month', date(expensedate)) AS month, SUM(amount) AS amount FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year GROUP BY date_part('month', date(expensedate)) ORDER BY month",
+        {"usersID": userID, "year": year},
+    ).fetchall()
+    spending_month_query = convertSQLToDict(results)
+
+    for record in spending_month_query:
+        month["name"] = calendar.month_abbr[int(record["month"])]
+        month["amount"] = record["amount"]
+
+        spending_month.append(month.copy())
+
+    return spending_month
 
 
 # Get and return the users lifetime expense history

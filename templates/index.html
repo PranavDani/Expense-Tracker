@@ -132,7 +132,7 @@
           remainingIncome < 0 %}
           <h4 class="card-title">₹0</h4>
           {% else %}
-          <h4 class="card-title">{{ remainingIncome }}</h4>
+          <h4 class="card-title">₹ {{ remainingIncome }}</h4>
           {% endif %}
         </div>
       </div>
@@ -142,7 +142,7 @@
         <div class="card-header"><strong>{{ date[:4] }} Expenses</strong></div>
         <div class="card-body">
           {% if expenses_year != None %}
-          <h4 class="card-title">{{ expenses_year }}</h4>
+          <h4 class="card-title">₹ {{ expenses_year }}</h4>
           {% else %}
           <p>You have no expenses yet.</p>
           {% endif %}
@@ -154,7 +154,7 @@
         <div class="card-header"><strong>Monthly Expenses</strong></div>
         <div class="card-body">
           {% if expenses_month != None %}
-          <h4 class="card-title">{{ expenses_month }}</h4>
+          <h4 class="card-title">₹ {{ expenses_month }}</h4>
           {% else %}
           <p>You have no expenses yet.</p>
           {% endif %}
@@ -166,7 +166,7 @@
         <div class="card-header"><strong>Weekly Expenses</strong></div>
         <div class="card-body">
           {% if expenses_week != None %}
-          <h4 class="card-title">{{ expenses_week }}</h4>
+          <h4 class="card-title">₹ {{ expenses_week }}</h4>
           {% else %}
           <p>You have no expenses yet.</p>
           {% endif %}
@@ -204,7 +204,7 @@
               <td>{{ expense['description'] }}</td>
               <td>{{ expense['category'] }}</td>
               <td>{{ expense['expensedate'] }}</td>
-              <td>{{ expense['amount'] }}</td>
+              <td>₹ {{ expense['amount'] }}</td>
             </tr>
             {% endfor %}
           </tbody>
