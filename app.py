@@ -3,6 +3,7 @@ import psycopg2
 import os
 import e_expenses
 import e_categories
+import e_account
 
 from flask_sqlalchemy import sqlalchemy
 from flask import Flask, jsonify, redirect, render_template, request, session
@@ -249,6 +250,66 @@ def expensehistory():
 
             # Redirect to results page and render a summary of the updated expense
             return render_template("expensed.html", results=expensed)
+
+
+@app.route("/account", methods=["GET", "POST"])
+@login_required
+def updateaccount():
+    if request.method == "POST":
+        # Initialize user's actions
+        userHasSelected_updateIncome = False
+        userHasSelected_updatePassword = False
+
+        # Initialize user alerts
+        alert_updateIncome = None
+        alert_updatePassword = None
+
+        # Determine what action was selected by the user (button/form trick from: https://stackoverflow.com/questions/26217779/how-to-get-the-name-of-a-submitted-form-in-flask)
+        if "btnUpdateIncome" in request.form:
+            userHasSelected_updateIncome = True
+        elif "btnUpdatePassword" in request.form:
+            userHasSelected_updatePassword = True
+        else:
+            return apology("Doh! Your Account is drunk. Try again!")
+
+        if userHasSelected_updateIncome:
+            newIncome = float(request.form.get("income").strip())
+            updatedIncome = e_account.updateIncome(newIncome, session["user_id"])
+            if updatedIncome != 1:
+                return apology(updatedIncome["apology"])
+            alert_updateIncome = newIncome
+
+        if userHasSelected_updatePassword:
+            # Try updating the users password
+            updatedPassword = e_account.updatePassword(
+                request.form.get("currentPassword"), request.form.get("newPassword"), session["user_id"]
+            )
+            # Render error message if the password could not be updated
+            if updatedPassword != 1:
+                return apology(updatedPassword["apology"])
+            # Set the alert message for user
+            alert_updatePassword = True
+
+        user = e_account.getAllUserInfo(session["user_id"])
+        return render_template(
+            "account.html",
+            username=user["name"],
+            income=user["income"],
+            newIncome=alert_updateIncome,
+            updatedPassword=alert_updatePassword,
+        )
+
+    # GET method
+    else:
+        user = e_account.getAllUserInfo(session["user_id"])
+
+        return render_template(
+            "account.html",
+            username=user["name"],
+            income=user["income"],
+            newIncome=None,
+            updatedPassword=None,
+        )
 
 
 if __name__ == "__main__":

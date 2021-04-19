@@ -1,0 +1,130 @@
+{% extends "layout.html" %} {% block title %} Your Account {% endblock %} {%
+block main %}
+<h1>Welcome, {{ username }} ❤</h1>
+<br />
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card bg-dark">
+      <div class="card-body">
+        <h5 class="card-title">Income</h5>
+        <p class="card-text">Your income is <strong>₹{{ income }}</strong>.</p>
+        <p>
+          <a
+            class="btn btn-primary"
+            data-toggle="collapse"
+            href="#collapseIncome"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapseIncome"
+            >Update Income</a
+          >
+        </p>
+      </div>
+      <div class="collapse" id="collapseIncome">
+        <form
+          action="/account"
+          id="updateIncome"
+          method="post"
+          autocomplete="off"
+        >
+          <div class="form-group">
+            <label class="col-form-label col-form-label-sm" for="income"
+              >Income Amount</label
+            >
+            <input
+              class="form-control form-control-sm"
+              type="text"
+              name="income"
+              id="income"
+              form="updateIncome"
+              size="10"
+              placeholder="₹"
+              maxlength="10"
+              pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$"
+              title="Format must be currency value without sign or commas e.g. 1, 2.50, 1500.75"
+              required
+            />
+          </div>
+          <p>
+            <button
+              type="submit"
+              id="btnUpdateIncome"
+              name="btnUpdateIncome"
+              class="btn btn-success"
+            >
+              Save Income
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card bg-danger">
+      <div class="card-body">
+        <h5 class="card-title">Password</h5>
+        <p>Update your password 🔐</p>
+        <p>
+          <a
+            class="btn btn-primary"
+            data-toggle="collapse"
+            href="#collapsePassword"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapsePassword"
+            >Change Password</a
+          >
+        </p>
+      </div>
+      <div class="collapse" id="collapsePassword">
+        <form action="/account" id="updatePassword" method="post">
+          <div class="form-group">
+            <input
+              class="form-control validate-register"
+              name="currentPassword"
+              id="currentPassword"
+              type="password"
+              placeholder="Current password"
+              required
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
+              onkeyup="checkMatch()"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              class="form-control validate-register"
+              name="newPassword"
+              id="newPassword"
+              type="password"
+              placeholder="New password"
+              required
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
+              onkeyup="checkMatch()"
+            />
+            <small class="form-text text-muted" style="margin: 1rem"
+              >Your password is safe with us. We <strong>do not</strong> store
+              plain-text passwords in our database ❤</small
+            >
+          </div>
+          <p>
+            <button
+              type="submit"
+              id="btnUpdatePassword"
+              name="btnUpdatePassword"
+              class="btn btn-success"
+            >
+              Save Password
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
