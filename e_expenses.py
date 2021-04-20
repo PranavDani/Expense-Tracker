@@ -142,10 +142,11 @@ def getLastFiveExpenses(userID):
 # Delete existing expense
 def deleteExpense(expense, userID):
     result = db.execute(
-        "delete from expense where user_id = :usersID and id = :oldExpenseID",
+        "delete from expenses where user_id = :usersID and id = :oldExpenseID",
         {"usersID": userID, "oldExpenseID": expense["id"]},
     )
     db.commit()
+    return True
 
 
 def getExpense(formData, userID):
