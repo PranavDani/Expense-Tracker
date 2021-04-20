@@ -49,6 +49,7 @@
               value=""
               form="quickExpense"
               maxlength="200"
+              autofocus
               required
             />
           </div>
@@ -162,7 +163,7 @@
       </div>
     </div>
     <div class="col">
-      <div class="card text-white bg-info mb-3" style="max-width: 20rem">
+      <div class="card text-white bg-dark mb-3" style="max-width: 20rem">
         <div class="card-header"><strong>Weekly Expenses</strong></div>
         <div class="card-body">
           {% if expenses_week != None %}

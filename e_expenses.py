@@ -94,7 +94,6 @@ def getTotalSpend_Year(userID):
     return totalSpendYear[0]["expenses_year"]
 
 
-# Get and return the users total spend for the current month
 def getTotalSpend_Month(userID):
     results = db.execute(
         "SELECT SUM(amount) AS expenses_month FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = date_part('year', CURRENT_DATE) AND date_part('month', date(expensedate)) = date_part('month', CURRENT_DATE)",
@@ -118,7 +117,6 @@ def getTotalSpend_Week(userID):
     return totalSpendWeek[0]["expenses_week"]
 
 
-# Get the users total income
 def getIncome(userID):
     income = db.execute("SELECT income FROM users WHERE id = :usersID", {"usersID": userID}).fetchone()[0]
 
@@ -237,22 +235,16 @@ def updateExpense(oldExpense, formData, userID):
 
 
 def generateMonthlyReport(userID, year=None):
-
-    # Default to getting current years reports
     if not year:
         year = datetime.now().year
 
-    # Create data structure to hold users monthly spending data for the chart (monthly summed data)
     spending_month_chart = getMonthlySpending(userID, year)
-
-    # Get the spending data from DB for the table (individual expenses per month)
     results = db.execute(
         "SELECT description, category, expensedate, amount FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year ORDER BY id ASC",
         {"usersID": userID, "year": year},
     ).fetchall()
     spending_month_table = convertSQLToDict(results)
 
-    # Combine both data points (chart and table) into a single data structure
     monthlyReport = {"chart": spending_month_chart, "table": spending_month_table}
 
     return monthlyReport
@@ -261,8 +253,6 @@ def generateMonthlyReport(userID, year=None):
 def getMonthlySpending(userID, year=None):
     spending_month = []
     month = {"name": None, "amount": None}
-
-    # Default to getting current years spending
     if not year:
         year = datetime.now().year
 
@@ -281,7 +271,55 @@ def getMonthlySpending(userID, year=None):
     return spending_month
 
 
-# Get and return the users lifetime expense history
+def getBudgets(userID):
+    results = db.execute(
+        "SELECT id, name, amount FROM budgets WHERE user_id = :usersID ORDER BY name ASC", {"usersID": userID}
+    ).fetchall()
+
+    budgets_query = convertSQLToDict(results)
+    return budgets_query
+
+
+def getBudgetID(budgetName, userID):
+    budgetID = db.execute(
+        "SELECT id FROM budgets WHERE user_id = :usersID AND name = :budgetName",
+        {"usersID": userID, "budgetName": budgetName},
+    ).fetchone()[0]
+
+    if not budgetID:
+        return None
+    else:
+        return budgetID
+
+
+def deleteBudget(budgetName, userID):
+    budgetID = getBudgetID(budgetName, userID)
+
+    if budgetID:
+        db.execute("DELETE FROM budgetCategories WHERE budgets_id = :budgetID", {"budgetID": budgetID})
+        db.commit()
+
+        db.execute("DELETE FROM budgets WHERE id = :budgetID", {"budgetID": budgetID})
+        db.commit()
+
+        return budgetName
+    else:
+        return None
+
+
+def getTotalBudgeted(userID, year=None):
+
+    amount = db.execute(
+        "SELECT SUM(amount) AS amount FROM budgets WHERE user_id = :usersID",
+        {"usersID": userID},
+    ).fetchone()[0]
+
+    if amount is None:
+        return 0
+    else:
+        return amount
+
+
 def getHistory(userID):
     results = db.execute(
         "SELECT description, category, expenseDate AS date, amount, submitTime FROM expenses WHERE user_id = :usersID ORDER BY id ASC",

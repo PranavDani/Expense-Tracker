@@ -332,13 +332,58 @@ def monthlyreport(year=None):
         if not 2021 <= year <= currentYear:
             return apology(f"Please select a valid budget year: 2021 through {currentYear}")
     else:
-        # Set year to current year if it was not in the route (this will set UX to display current years report)
         year = datetime.now().year
 
     # Generate a data structure that combines the users monthly spending data needed for chart and table
     monthlySpending = e_expenses.generateMonthlyReport(session["user_id"], year)
 
     return render_template("monthlyreport.html", monthlySpending=monthlySpending, year=year)
+
+
+@app.route("/budgets", methods=["GET", "POST"])
+@login_required
+def budgets():
+    if request.method == "GET":
+        income = e_account.getIncome(session["user_id"])
+        # Get the users current budgets
+        budgets = e_expenses.getBudgets(session["user_id"])
+        budgeted = e_expenses.getTotalBudgeted(session["user_id"])
+
+        return render_template(
+            "budgets.html", income=income, budgets=budgets, budgeted=budgeted, deletedBudgetName=None
+        )
+
+    else:
+        budgetName = request.form.get("delete").strip()
+        deletedBudgetName = e_expenses.deleteBudget(budgetName, session["user_id"])
+
+        # Render the budgets page with a success message, otherwise throw an error/apology
+        if deletedBudgetName:
+            # Get the users income, current budgets, and sum their budgeted amount unless they don't have any budgets (same steps as a GET for this route)
+            income = e_expenses.getIncome(session["user_id"])
+            budgets = e_expenses.getBudgets(session["user_id"])
+            budgeted = e_expenses.getTotalBudgeted(session["user_id"])
+
+            return render_template(
+                "budgets.html",
+                income=income,
+                budgets=budgets,
+                budgeted=budgeted,
+                deletedBudgetName=deletedBudgetName,
+            )
+        else:
+            return apology("Uh oh! Your budget could not be deleted. ✂")
+
+
+@app.route("/createbudget", methods=["GET", "POST"])
+@login_required
+def createbudget():
+    if request.method == "GET":
+        income = e_account.getIncome(session["user_id"])
+        budgeted = e_expenses.getTotalBudgeted(session["user_id"])
+        categories = e_categories.getSpendCategories(session["user_id"])
+
+        return render_template("createbudget.html", income=income, budgeted=budgeted, categories=categories)
 
 
 if __name__ == "__main__":
