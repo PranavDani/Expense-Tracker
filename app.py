@@ -348,6 +348,7 @@ def budgets():
         # Get the users current budgets
         budgets = e_expenses.getBudgets(session["user_id"])
         budgeted = e_expenses.getTotalBudgeted(session["user_id"])
+        print(budgets)
 
         return render_template(
             "budgets.html", income=income, budgets=budgets, budgeted=budgeted, deletedBudgetName=None
@@ -384,6 +385,33 @@ def createbudget():
         categories = e_categories.getSpendCategories(session["user_id"])
 
         return render_template("createbudget.html", income=income, budgeted=budgeted, categories=categories)
+
+    else:
+        # budgets = e_expenses.getBudgets(session["user_id"])
+        # if budgets:
+        #     budgetCount = 0
+        #     for amount in budgets:
+        #         budgetCount += len(budgets[amount])
+        #     if budgetCount >= 20:
+        #         return apology("You've reached the max amount of budgets'")
+
+        # Get all of the budget info provided from the HTML form
+        formData = list(request.form.items())
+        # Generate data structure to hold budget info from form
+        budgetDict = e_expenses.generateBudgetFromForm(formData)
+
+        # Render error message if budget name or categories contained invalid data
+        if "apology" in budgetDict:
+            return apology(budgetDict["apology"])
+        else:
+            # Add budget to DB for user
+            budget = e_expenses.createBudget(budgetDict, session["user_id"])
+            # Render error message if budget name is a duplicate of another budget the user has
+            if "apology" in budget:
+                return apology(budget["apology"])
+            else:
+                # return render_template("budgetcreated.html", results=budget)
+                print("Thank you")
 
 
 if __name__ == "__main__":

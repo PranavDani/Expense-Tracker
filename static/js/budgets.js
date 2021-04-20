@@ -6,45 +6,8 @@
 
 // Load budget years and calculate estimates on page load to set initial amounts in the muted text
 $(document).ready(function () {
-  loadBudgetYears();
   calculateEstimates();
 });
-
-// Generates the allowed years to scope a budget for
-function loadBudgetYears() {
-  // Get the budget year element from the form
-  let years = document.getElementById("year");
-
-  // Get the current year from users machine
-  let currentYear = new Date().getFullYear();
-
-  // Try getting the budgets year if user is updating existing budget (will be null if creating a new budget)
-  let updatableYear = document.getElementById("year").getAttribute("data-year");
-
-  // Generate allowable years to select for budget (2020 thru current year)
-  for (let i = currentYear; i >= 2020; i--) {
-    // Create an option tag
-    let option = document.createElement("option");
-    option.innerHTML = i;
-    option.value = i;
-
-    // Check if an existing budget year exists (this means user is updating an existing budget)
-    if (updatableYear !== null) {
-      // Set the selected year to the existing budgets year
-      if (i.toString() == updatableYear) {
-        option.selected = true;
-      }
-    }
-    // User is creating a new budget
-    else {
-      // Set the selected year to the current year
-      if (i == currentYear) {
-        option.selected = true;
-      }
-    }
-    years.appendChild(option);
-  }
-}
 
 // Sets the budget amount to the remaining income that has not yet been budgeted
 function fillBudgetAmount(amount) {
@@ -62,6 +25,11 @@ checkBoxes.change(function () {
 });
 $(".custom-control-input").change();
 
+let rupeeIndian = Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
+
 // Calculates weekly/monthly budget estimates based on the total budget amount
 function calculateEstimates() {
   // Update the budget amount estimates
@@ -69,17 +37,9 @@ function calculateEstimates() {
   const weekly = budget / 52;
   const monthly = budget / 12;
   document.getElementById("weekly").innerHTML =
-    "Weekly amount: " +
-    new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(weekly);
+    "Weekly amount: " + rupeeIndian.format(weekly);
   document.getElementById("monthly").innerHTML =
-    "Monthly amount: " +
-    new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-    }).format(monthly);
+    "Monthly amount: " + rupeeIndian.format(monthly);
 
   // Get all of the checked categories and update their estimates
   let checkedCategories = getAllCheckedCategories();
@@ -160,32 +120,20 @@ function getAllCheckedCategories() {
   }
 }
 
-// Calculates the dollar amount of a spend category based on the users input of percentage, then displays the output to the user
 function calculateCategories(percentInput) {
   let categoryBudget = document.getElementById("amount").value;
   const categoryWeekly = categoryBudget / 52;
   const categoryMonthly = categoryBudget / 12;
   let categoryLabel = percentInput.nextElementSibling.nextElementSibling;
 
-  // Only calculate the amount if user enters a percent value of 1-100
   if (percentInput.value > 0 && percentInput.value <= 100) {
-    // Show the calculations to the user
     categoryLabel.innerHTML =
       "Total amount: " +
-      new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(categoryBudget * (percentInput.value / 100)) +
+      rupeeIndian.format(categoryBudget * (percentInput.value / 100)) +
       "<br>Weekly amount: " +
-      new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(categoryWeekly * (percentInput.value / 100)) +
+      rupeeIndian.format(categoryWeekly * (percentInput.value / 100)) +
       "<br>Monthly amount: " +
-      new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(categoryMonthly * (percentInput.value / 100));
+      rupeeIndian.format(categoryMonthly * (percentInput.value / 100));
     document.getElementById("btnSaveBudget").disabled = false;
   }
   // Display error message
@@ -218,7 +166,7 @@ function validateCategories() {
     sum += parseInt(percent.value) || 0;
   }
 
-  // Validate that the summed percentages equals 100%. If it doesn't, prevent form submission and show message.
+  // Validate that the summed percentages equals 100%. If it doet form sn't, prevensubmission and show message.
   var submitAlert = document.getElementById("submitAlert");
   if (sum != 100) {
     submitAlert.innerHTML =

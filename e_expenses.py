@@ -1,5 +1,6 @@
 import requests
 import psycopg2
+import re
 import calendar
 import os
 
@@ -273,10 +274,11 @@ def getMonthlySpending(userID, year=None):
 
 def getBudgets(userID):
     results = db.execute(
-        "SELECT id, name, amount FROM budgets WHERE user_id = :usersID ORDER BY name ASC", {"usersID": userID}
+        "SELECT id, name, amount, user_id FROM budgets WHERE user_id = :usersID ORDER BY name ASC", {"usersID": userID}
     ).fetchall()
 
     budgets_query = convertSQLToDict(results)
+    print(budgets_query)
     return budgets_query
 
 
@@ -318,6 +320,135 @@ def getTotalBudgeted(userID, year=None):
         return 0
     else:
         return amount
+
+
+def isUniqueBudgetName(budgetName, budgetID, userID):
+    if budgetID == None:
+        results = db.execute("SELECT name FROM budgets WHERE user_id = :usersID", {"usersID": userID}).fetchall()
+        existingBudgets = convertSQLToDict(results)
+    else:
+        results = db.execute(
+            "SELECT name FROM budgets WHERE user_id = :usersID AND NOT id = :oldBudgetID",
+            {"usersID": userID, "oldBudgetID": budgetID},
+        ).fetchall()
+        existingBudgets = convertSQLToDict(results)
+
+    isUniqueName = True
+    for budget in existingBudgets:
+        if budgetName.lower() == budget["name"].lower():
+            isUniqueName = False
+            break
+
+    if isUniqueName:
+        return True
+    else:
+        return False
+
+
+def addCategory(budgetID, categoryIDS):
+    for categoryID in categoryIDS:
+        db.execute(
+            "INSERT INTO budgetCategories (budgets_id, category_id, amount) VALUES (:budgetID, :categoryID, :percentAmount)",
+            {"budgetID": budgetID, "categoryID": categoryID["id"], "percentAmount": categoryID["amount"]},
+        )
+    db.commit()
+
+
+def getBudgetCategoryIDS(categories, userID):
+    categoryIDS = []
+    for category in categories:
+        categoryID = db.execute(
+            "SELECT categories.id FROM userCategories INNER JOIN categories ON userCategories.category_id = categories.id WHERE userCategories.user_id = :usersID AND categories.name = :categoryName",
+            {"usersID": userID, "categoryName": category["name"]},
+        ).fetchone()[0]
+
+        id_amount = {"id": None, "amount": None}
+        id_amount["id"] = categoryID
+        id_amount["amount"] = category["percent"]
+
+        categoryIDS.append(id_amount)
+
+    return categoryIDS
+
+
+def generateBudgetFromForm(formData):
+    budget = {"name": None, "amount": None, "categories": []}
+    counter = 0
+
+    # Loop through all of the form data to extract budgets details and store in the budget dict
+    for key, value in formData:
+        counter += 1
+        # First 3 keys represent the name/year/amount from the form, all other keys represent dynamically loaded categories from the form
+        if counter <= 2:
+            # Check name for invalid chars and uniqueness
+            if key == "name":
+                # Invalid chars are all special chars except underscores, spaces, and hyphens (uses same regex as what's on the HTML page)
+                validBudgetName = re.search("^([a-zA-Z0-9_\s\-]*)$", value)
+                if validBudgetName:
+                    budget[key] = value.strip()
+                else:
+                    return {
+                        "apology": "Please enter a budget name without special characters except underscores, spaces, and hyphens"
+                    }
+            # Convert the amount from string to float
+            else:
+                amount = float(value.strip())
+                budget[key] = amount
+        # All other keys will provide the *category* name / percent budgeted
+        else:
+            # Skip iteration if value is empty (empty means the user doesnt want the category in their budget)
+            if value == "":
+                continue
+
+            # Need to split the key since the HTML elements are loaded dynamically and named like 'categories.1', 'categories.2', etc.
+            cleanKey = key.split(".")
+
+            # Store the category name and associated % the user wants budgetd for the category
+            category = {"name": None, "percent": None}
+            if cleanKey[0] == "categories":
+                category["name"] = value.strip()
+
+                # Get the percent value and convert to decimal
+                percent = int(formData[counter][1].strip()) / 100
+                category["percent"] = percent
+
+                # Add the category to the list of categories within the dict
+                budget[cleanKey[0]].append(category)
+            # Pass on this field because we grab the percent above (Why? It's easier to keep these 2 lines than rewrite many lines. This is the lowest of low pri TODOs)
+            elif cleanKey[0] == "categoryPercent":
+                pass
+            else:
+                return {
+                    "apology": "Only categories and their percentage of the overall budget are allowed to be stored"
+                }
+
+    return budget
+
+
+def createBudget(budget, userID):
+    # Verify the budget name is not a duplicate of an existing budget
+    uniqueBudgetName = isUniqueBudgetName(budget["name"], None, userID)
+    if not uniqueBudgetName:
+        return {"apology": "Please enter a unique budget name, not a duplicate."}
+
+    # Insert new budget into DB
+    newBudgetID = db.execute(
+        "INSERT INTO budgets (name, amount, user_id) VALUES (:budgetName, :budgetAmount, :usersID) RETURNING id",
+        {
+            "budgetName": budget["name"],
+            "budgetAmount": budget["amount"],
+            "usersID": userID,
+        },
+    ).fetchone()[0]
+    db.commit()
+
+    # Get category IDs from DB for the new budget
+    categoryIDS = getBudgetCategoryIDS(budget["categories"], userID)
+
+    # Insert a record for each category in the new budget
+    addCategory(newBudgetID, categoryIDS)
+
+    return budget
 
 
 def getHistory(userID):
