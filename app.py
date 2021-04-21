@@ -348,10 +348,10 @@ def budgets():
         # Get the users current budgets
         budgets = e_expenses.getBudgets(session["user_id"])
         budgeted = e_expenses.getTotalBudgeted(session["user_id"])
-        print(budgets)
+        user = session["user_id"]
 
         return render_template(
-            "budgets.html", income=income, budgets=budgets, budgeted=budgeted, deletedBudgetName=None
+            "budgets.html", income=income, budgets=budgets, user=user, budgeted=budgeted, deletedBudgetName=None
         )
 
     else:
@@ -369,6 +369,7 @@ def budgets():
                 "budgets.html",
                 income=income,
                 budgets=budgets,
+                user=user,
                 budgeted=budgeted,
                 deletedBudgetName=deletedBudgetName,
             )
@@ -387,13 +388,13 @@ def createbudget():
         return render_template("createbudget.html", income=income, budgeted=budgeted, categories=categories)
 
     else:
-        # budgets = e_expenses.getBudgets(session["user_id"])
-        # if budgets:
-        #     budgetCount = 0
-        #     for amount in budgets:
-        #         budgetCount += len(budgets[amount])
-        #     if budgetCount >= 20:
-        #         return apology("You've reached the max amount of budgets'")
+        budgets = e_expenses.getBudgets(session["user_id"])
+        if budgets:
+            budgetCount = 0
+            for amount in budgets:
+                budgetCount += len(budgets[user_id])
+            if budgetCount >= 20:
+                return apology("You've reached the max amount of budgets'")
 
         # Get all of the budget info provided from the HTML form
         formData = list(request.form.items())

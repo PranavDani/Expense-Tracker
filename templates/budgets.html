@@ -32,8 +32,8 @@ Manage Budgets
     <div class="card bg-dark">
       <div class="card-body">
         <h5 class="card-title">Update existing budgets</h5>
-        {% if budgets in budgets %}
-        {% for budget in budgets %}
+        {% if budgets and user in budgets %}
+        {% for budget in budgets[user] %}
         <div class="btn-group">
           <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
             aria-expanded="false">
@@ -47,7 +47,7 @@ Manage Budgets
               data-amount="{{ budget['amount']  }}">Delete</a>
           </div>
         </div>
-        <small class="form-text text-muted">Amount: {{ budget["amount"]  }}</a></small>
+        <small class="form-text text-muted">Amount: ₹ {{ budget["amount"]  }}</a></small>
         <br>
         {% endfor %}
         {% else %}

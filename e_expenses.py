@@ -124,7 +124,6 @@ def getIncome(userID):
     return float(income)
 
 
-# Get and return the users last 5 expenses
 def getLastFiveExpenses(userID):
     results = db.execute(
         "SELECT description, category, expenseDate, amount FROM expenses WHERE user_id = :usersID ORDER BY id DESC LIMIT 5",
@@ -139,7 +138,6 @@ def getLastFiveExpenses(userID):
         return None
 
 
-# Delete existing expense
 def deleteExpense(expense, userID):
     result = db.execute(
         "delete from expenses where user_id = :usersID and id = :oldExpenseID",
@@ -279,8 +277,19 @@ def getBudgets(userID):
     ).fetchall()
 
     budgets_query = convertSQLToDict(results)
-    print(budgets_query)
-    return budgets_query
+
+    if budgets_query:
+        # Create a dict with budget year as key and empty list as value which will store all budgets for that year
+        budgets = {budget["user_id"]: [] for budget in budgets_query}
+
+        # Update the dict by inserting budget info as values
+        for budget in budgets_query:
+            budgets[budget["user_id"]].append({"amount": budget["amount"], "id": budget["id"], "name": budget["name"]})
+
+        return budgets
+        print(budgets)
+    else:
+        return None
 
 
 def getBudgetID(budgetName, userID):
