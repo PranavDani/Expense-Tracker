@@ -364,6 +364,7 @@ def budgets():
             income = e_expenses.getIncome(session["user_id"])
             budgets = e_expenses.getBudgets(session["user_id"])
             budgeted = e_expenses.getTotalBudgeted(session["user_id"])
+            user = session["user_id"]
 
             return render_template(
                 "budgets.html",
@@ -389,14 +390,14 @@ def createbudget():
 
     else:
         budgets = e_expenses.getBudgets(session["user_id"])
+        user = session["user_id"]
         if budgets:
             budgetCount = 0
             for amount in budgets:
-                budgetCount += len(budgets[user_id])
+                budgetCount += len(budgets[user])
             if budgetCount >= 20:
                 return apology("You've reached the max amount of budgets'")
 
-        # Get all of the budget info provided from the HTML form
         formData = list(request.form.items())
         # Generate data structure to hold budget info from form
         budgetDict = e_expenses.generateBudgetFromForm(formData)
@@ -411,8 +412,38 @@ def createbudget():
             if "apology" in budget:
                 return apology(budget["apology"])
             else:
-                # return render_template("budgetcreated.html", results=budget)
-                print("Thank you")
+                return render_template("budgetcreated.html", results=budget)
+
+
+@app.route("/updatebudget/<urlvar_budgetname>", methods=["GET", "POST"])
+@login_required
+def updatebudget(urlvar_budgetname):
+    """Update budget"""
+
+    if request.method == "GET":
+        budgetID = e_expenses.getBudgetID(urlvar_budgetname, session["user_id"])
+        if budgetID is None:
+            return apology("'" + urlvar_budgetname + "' budget does not exist")
+        else:
+            budget = e_expenses.getBudgetByID(budgetID, session["user_id"])
+
+        income = e_account.getIncome(session["user_id"])
+        budgeted = e_expenses.getTotalBudgetedAmount(session["user_id"])
+        budget = e_expenses.getUpdatableBudget(budget, session["user_id"])
+        print(budget)
+        return render_template("updatebudget.html", income=income, budgeted=budgeted, budget=budget)
+
+    else:
+        formData = list(request.form.items())
+        budgetDict = e_expenses.generateBudgetFromForm(formData)
+        if "apology" in budgetDict:
+            return apology(budgetDict["apology"])
+        else:
+            budget = e_expenses.updateBudget(urlvar_budgetname, budgetDict, session["user_id"])
+            if "apology" in budget:
+                return apology(budget["apology"])
+            else:
+                return render_template("budgetcreated.html", results=budget)
 
 
 if __name__ == "__main__":

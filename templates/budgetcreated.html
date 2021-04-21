@@ -1,0 +1,51 @@
+{% extends "layout.html" %} {% block title %} Budget Created {% endblock %} {%
+block main %}
+<h1>Budget Created</h1>
+<br />
+<div class="alert alert-dismissible alert-success">
+  <button type="button" class="close text-dark" data-dismiss="alert">×</button>
+  <strong>Well done! </strong>This budget will now appear in your
+  <a href="/">Dashboard</a> and <a href="/reports">Reports</a> where you can
+  monitor how well you're spending against your budget.
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card bg-dark">
+      <div class="card-body text-light">
+        <h5 class="card-title">Budget Details</h5>
+        <p><strong>Name</strong>: {{ results["name"] }}</p>
+        <p><strong>Amount</strong>: ₹ {{ results["amount"] }}</p>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="card-title text-light" scope="col">Category</th>
+                <th class="card-title text-light" scope="col">%</th>
+                <th class="card-title text-light" scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for category in results["categories"] %} {% set amount =
+              (results["amount"] * category["percent"]) %}
+              <tr>
+                <td class="card-title text-light">{{ category["name"] }}</td>
+                <td class="card-title text-light">
+                  {{ (category['percent'] * 100) | round | int }}%
+                </td>
+                <td class="card-title text-light">₹ {{ amount }}</td>
+              </tr>
+
+              {% endfor %}
+              <tr>
+                <td class="card-title text-light">Total</td>
+                <td class="card-title text-light">100%</td>
+                <td class="card-title text-light">₹ {{ results["amount"] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

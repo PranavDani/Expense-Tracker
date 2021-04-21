@@ -3,6 +3,7 @@ import psycopg2
 import re
 import calendar
 import os
+import e_categories
 
 from flask_sqlalchemy import sqlalchemy
 from flask import Flask, jsonify, redirect, render_template, request, session
@@ -279,7 +280,7 @@ def getBudgets(userID):
     budgets_query = convertSQLToDict(results)
 
     if budgets_query:
-        # Create a dict with budget year as key and empty list as value which will store all budgets for that year
+        # Create a dict with budget user_id as key and empty list as value which will store all budgets for that user_id
         budgets = {budget["user_id"]: [] for budget in budgets_query}
 
         # Update the dict by inserting budget info as values
@@ -457,6 +458,98 @@ def createBudget(budget, userID):
 
     # Insert a record for each category in the new budget
     addCategory(newBudgetID, categoryIDS)
+
+    return budget
+
+
+def deleteBudget(budgetName, userID):
+    budgetID = getBudgetID(budgetName, userID)
+
+    if budgetID:
+        db.execute("DELETE FROM budgetCategories WHERE budgets_id = :budgetID", {"budgetID": budgetID})
+        db.commit()
+
+        db.execute("DELETE FROM budgets WHERE id = :budgetID", {"budgetID": budgetID})
+        db.commit()
+
+        return budgetName
+    else:
+        return None
+
+
+def getBudgetByID(budgetID, userID):
+    results = db.execute(
+        "SELECT name, amount, id FROM budgets WHERE user_id = :usersID AND id = :budgetID",
+        {"usersID": userID, "budgetID": budgetID},
+    ).fetchall()
+
+    budget = convertSQLToDict(results)
+
+    return budget[0]
+
+
+def getTotalBudgetedAmount(userID):
+
+    amount = db.execute(
+        "SELECT SUM(amount) AS amount FROM budgets WHERE user_id = :usersID", {"usersID": userID}
+    ).fetchone()[0]
+
+    if amount is None:
+        return 0
+    else:
+        return amount
+
+
+def getUpdatableBudget(budget, userID):
+
+    categories = e_categories.getSpendCategories(userID)
+
+    # Get the budget's spend categories and % amount for each category
+    results = db.execute(
+        "SELECT DISTINCT categories.name, budgetCategories.amount FROM budgetCategories INNER JOIN categories ON budgetCategories.category_id = categories.id INNER JOIN budgets ON budgetCategories.budgets_id = budgets.id WHERE budgets.id = :budgetsID",
+        {"budgetsID": budget["id"]},
+    ).fetchall()
+    budgetCategories = convertSQLToDict(results)
+
+    # Add 'categories' as a new key/value pair to the existing budget dict
+    budget["categories"] = []
+
+    for category in categories:
+        for budgetCategory in budgetCategories:
+            # Mark the category as checked/True if it exists in the budget that the user wants to update
+            if category["name"] == budgetCategory["name"]:
+                amount = round(budgetCategory["amount"] * 100)
+                budget["categories"].append({"name": category["name"], "amount": amount, "checked": True})
+                break
+        else:
+            budget["categories"].append({"name": category["name"], "amount": None, "checked": False})
+
+    return budget
+
+
+def updateBudget(oldBudgetName, budget, userID):
+    oldBudgetID = getBudgetID(oldBudgetName, userID)
+
+    uniqueBudgetName = isUniqueBudgetName(budget["name"], oldBudgetID, userID)
+    if not uniqueBudgetName:
+        return {"apology": "Please enter a unique budget name, not a duplicate."}
+
+    db.execute(
+        "UPDATE budgets SET name = :budgetName, amount = :budgetAmount WHERE id = :oldBudgetID AND user_id = :usersID",
+        {
+            "budgetName": budget["name"],
+            "budgetAmount": budget["amount"],
+            "oldBudgetID": oldBudgetID,
+            "usersID": userID,
+        },
+    )
+    db.commit()
+
+    db.execute("DELETE FROM budgetCategories WHERE budgets_id = :oldBudgetID", {"oldBudgetID": oldBudgetID})
+    db.commit()
+
+    categoryIDS = getBudgetCategoryIDS(budget["categories"], userID)
+    addCategory(oldBudgetID, categoryIDS)
 
     return budget
 
