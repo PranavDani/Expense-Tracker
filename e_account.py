@@ -10,7 +10,7 @@ from flask_session import Session
 from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
 from datetime import datetime
-from saviour import apology, login_required
+from saviour import apology, login_required, convertSQLToDict
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import create_engine
 
@@ -75,6 +75,48 @@ def updatePassword(oldPass, newPass, userID):
         return {"apology": "Sorry, Update Password is having issues. Try again!"}
     else:
         return rows
+
+
+def getBudgets(userID, year=None):
+    budgets = []
+    budget = {"name": None, "amount": 0, "spent": 0, "remaining": 0}
+
+    if not year:
+        year = datetime.now().year
+
+    budgets_query = e_expenses.getBudgets(userID)
+    user = session["user_id"]
+    if budgets_query and user in budgets_query:
+        for record in budgets_query[user]:
+            budgetID = record["id"]
+            budget["name"] = record["name"]
+            budget["amount"] = record["amount"]
+
+            # Query the DB for the budgets total spent amount (calculated as the sum of expenses with categories that match the categories selected for the individual budget)
+            results = db.execute(
+                "SELECT SUM(amount) AS spent FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year AND category IN (SELECT categories.name FROM budgetcategories INNER JOIN categories on budgetcategories.category_id = categories.id WHERE budgetcategories.budgets_id = :budgetID)",
+                {"usersID": userID, "year": year, "budgetID": budgetID},
+            ).fetchall()
+            budget_TotalSpent = convertSQLToDict(results)
+
+            if budget_TotalSpent[0]["spent"] == None:
+                budget["spent"] = 0
+            else:
+                budget["spent"] = budget_TotalSpent[0]["spent"]
+
+            # Set the remaining amount to 0 if the user has spent more than they budgeted for so that the charts don't look crazy
+            if budget["spent"] > budget["amount"]:
+                budget["remaining"] = 0
+            else:
+                budget["remaining"] = budget["amount"] - budget["spent"]
+
+            # Add the budget to the list
+            budgets.append(budget.copy())
+
+        return budgets
+
+    else:
+        return None
 
 
 def getAllUserInfo(userID):

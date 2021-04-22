@@ -218,5 +218,56 @@
       {% endif %}
     </div>
   </div>
+  <br />
+  <div class="row">
+    <div class="col-12">
+      <h2 style="text-align: left">Your Budgets</h2>
+      {% if budgets %}
+      <p class="text-muted" style="text-align: left">
+        <a href="/budgets">(View all Budgets)</a>
+      </p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    {% if budgets %} {% for budget in budgets %}
+    <div class="col">
+      <div class="card bg-dark mb-3" style="max-width: 14rem">
+        <div class="card-header">
+          <strong
+            ><a href="/updatebudget/{{ budget['name'] }}"
+              >{{ budget["name"] }}</a
+            ></strong
+          >
+        </div>
+        <div class="card-body-dash">
+          {% set percent = ((budget["spent"] / budget["amount"]) * 100) %} {%
+          set totalBudgetAmount = (budget["amount"]) %}
+          <p>
+            You've spent {{ percent | round | int }}% of your ₹{{
+            totalBudgetAmount }} budget
+          </p>
+          <div class="chart-container" style="position: relative; height: 17vh">
+            <canvas id="budgetChart.{{ loop.index - 1 }}"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="col">
+      <p style="text-align: left">
+        <small class="text-muted">You have no budgets yet.</small>
+      </p>
+    </div>
+    {% endif %}
+  </div>
 </div>
-{% endblock %}
+
+<script src="/static/js/dashboard.js"></script>
+
+{% if budgets %}
+<script>
+  var budgetData = JSON.stringify({{ budgets | tojson }});
+  loadBudgetData(budgetData);
+</script>
+{% endif %} {% endblock %}
