@@ -158,7 +158,6 @@ def index():
         expenses_last5 = e_expenses.getLastFiveExpenses(session["user_id"])
         date = datetime.today().strftime("%Y-%m-%d")
         user = session["user_id"]
-        print(budgets)
 
         return render_template(
             "index.html",
@@ -311,6 +310,15 @@ def reports():
     return render_template("reports.html")
 
 
+@app.route("/budgetsreport", methods=["GET"])
+@login_required
+def budgetsreport(year=None):
+    """View year-to-date spending by category report"""
+    # Generate a data structure that combines the users budgets and the expenses that have categories which match budgets
+    budgets = e_expenses.generateBudgetsReport(session["user_id"])
+    return render_template("budgetsreport.html", budgets=budgets)
+
+
 @app.route("/monthlyreport", methods=["GET"])
 @app.route("/monthlyreport/<int:year>", methods=["GET"])
 @login_required
@@ -421,7 +429,6 @@ def updatebudget(urlvar_budgetname):
         income = e_account.getIncome(session["user_id"])
         budgeted = e_expenses.getTotalBudgetedAmount(session["user_id"])
         budget = e_expenses.getUpdatableBudget(budget, session["user_id"])
-        print(budget)
         return render_template("updatebudget.html", income=income, budgeted=budgeted, budget=budget)
 
     else:

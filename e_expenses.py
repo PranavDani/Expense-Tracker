@@ -3,6 +3,7 @@ import psycopg2
 import re
 import calendar
 import os
+import e_account
 import e_categories
 
 from flask_sqlalchemy import sqlalchemy
@@ -291,6 +292,26 @@ def getBudgets(userID):
         print(budgets)
     else:
         return None
+
+
+def generateBudgetsReport(userID):
+    budgetsReport = []
+
+    year = datetime.now().year
+    budgetsReport = e_account.getBudgets(userID, year)
+
+    # Loop through the budgets and add a new key/value pair to hold expense details per budget
+    if budgetsReport:
+        for record in budgetsReport:
+            budgetID = getBudgetID(record["name"], userID)
+            results = db.execute(
+                "SELECT expenses.description, expenses.category, expenses.expenseDate, expenses.amount FROM expenses WHERE user_id = :usersID AND category IN (SELECT categories.name FROM budgetcategories INNER JOIN categories on budgetcategories.category_id = categories.id WHERE budgetcategories.budgets_id = :budgetID)",
+                {"usersID": userID, "budgetID": budgetID},
+            ).fetchall()
+            expenseDetails = convertSQLToDict(results)
+            record["expenses"] = expenseDetails
+
+    return budgetsReport
 
 
 def getBudgetID(budgetName, userID):
