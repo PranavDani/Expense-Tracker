@@ -347,7 +347,7 @@ def spendingreport(year=None):
 
     if year:
         currentYear = datetime.now().year
-        if not 2021 <= year < -currentYear:
+        if not 2020 <= year <= currentYear:
             return apology(f"Please select a valid budget year: 2021 through {currentYear}")
 
     else:
