@@ -28,7 +28,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Create engine object to manage connections to DB, and scoped session to separate user interactions with DB
-engine = create_engine(os.getenv("DATABASE_LINK"))
+engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
