@@ -88,9 +88,9 @@ Report {% endblock %} {% block main %}
       <tr>
         <td></td>
         {% for category in categories %}
-        <td>{{ category["amount"] }}</td>
+        <td>₹ {{ category["amount"] }}</td>
         {% endfor %}
-        <td>{{ categories | sum(attribute='amount') }}</td>
+        <td>₹ {{ categories | sum(attribute='amount') }}</td>
       </tr>
     </tfoot>
   </table>
