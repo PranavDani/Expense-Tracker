@@ -1,4 +1,20 @@
-{% extends "layout.html" %} {% block scripts %}
+{% extends "layout.html" %} {% block styles %}
+<link
+  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
+  type="text/css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
+  type="text/css"
+  rel="stylesheet"
+/>
+<link href="/static/css/expenses.css" type="text/css" rel="stylesheet" />
+<link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
+
+{% endblock %} {% block scripts %}
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 {% endblock %} {% block title %} Home {% endblock %} {% block main %}
 <h1>Dashboard</h1>
@@ -196,7 +212,7 @@
               <th scope="col">Description</th>
               <th scope="col">Category</th>
               <th scope="col">Date</th>
-              <th scope="col">Amount</th>
+              <th scope="col">Amount (₹)</th>
             </tr>
           </thead>
           <tbody>
@@ -264,6 +280,8 @@
 </div>
 
 <script src="/static/js/dashboard.js"></script>
+
+<script src="/static/js/expensehistory.js"></script>
 
 {% if budgets %}
 <script>

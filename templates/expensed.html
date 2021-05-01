@@ -1,5 +1,21 @@
-{% extends "layout.html" %} {% block title %} Expenses Added {% endblock %} {%
-block main %}
+{% extends "layout.html" %} {% block styles %}
+<link
+  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
+  type="text/css"
+  rel="stylesheet"
+/>
+<link
+  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
+  type="text/css"
+  rel="stylesheet"
+/>
+<link href="/static/css/expenses.css" type="text/css" rel="stylesheet" />
+<link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
+
+{% endblock %}{% block scripts %}
+
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+{% endblock %} {% block title %} Expenses Added {% endblock %} {% block main %}
 <h1>Expenses Added</h1>
 <br />
 <table class="table table-hover table-bordered">
@@ -24,4 +40,6 @@ block main %}
     {% endfor %}
   </tbody>
 </table>
+
+<script src="/static/js/expensehistory.js"></script>
 {% endblock %}
