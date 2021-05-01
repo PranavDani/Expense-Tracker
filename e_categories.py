@@ -39,3 +39,14 @@ def getSpendCategories(userID):
     ).fetchall()
     categories = convertSQLToDict(results)
     return categories
+
+
+def getSpendCategories_Inactive(userID):
+    results = db.execute(
+        "SELECT category FROM expenses WHERE user_id = :usersID AND category NOT IN(SELECT categories.name FROM usercategories INNER JOIN categories ON categories.id = usercategories.category_id WHERE user_id = :usersID) GROUP BY category",
+        {"usersID": userID},
+    ).fetchall()
+
+    categories = convertSQLToDict(results)
+
+    return categories

@@ -339,6 +339,31 @@ def monthlyreport(year=None):
     return render_template("monthlyreport.html", monthlySpending=monthlySpending, year=year)
 
 
+@app.route("/spendingreport", methods=["GET"])
+@app.route("/spendingreport/<int:year>", methods=["GET"])
+@login_required
+def spendingreport(year=None):
+    """View spending categories report"""
+
+    if year:
+        currentYear = datetime.now().year
+        if not 2021 <= year < -currentYear:
+            return apology(f"Please select a valid budget year: 2021 through {currentYear}")
+
+    else:
+        year = datetime.now().year
+
+    spendingReport = e_expenses.generateSpendingTrendsReport(session["user_id"], year)
+
+    return render_template(
+        "spendingreport.html",
+        spending_trends_chart=spendingReport["chart"],
+        spending_trends_table=spendingReport["table"],
+        categories=spendingReport["categories"],
+        year=year,
+    )
+
+
 @app.route("/budgets", methods=["GET", "POST"])
 @login_required
 def budgets():

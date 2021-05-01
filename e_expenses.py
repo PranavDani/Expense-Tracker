@@ -3,6 +3,7 @@ import psycopg2
 import re
 import calendar
 import os
+import copy
 import e_account
 import e_categories
 
@@ -581,3 +582,102 @@ def getHistory(userID):
     history = convertSQLToDict(results)
 
     return history
+
+
+def getSpendingTrends(userID, year=None):
+
+    spending_trends = []
+    categoryTrend = {"name": None, "proportionalAmount": None, "totalSpent": None, "totalCount": None}
+
+    if not year:
+        year = datetime.now().year
+
+    results = db.execute(
+        "SELECT category, COUNT(category) as count, SUM(amount) as amount FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year GROUP BY category ORDER BY COUNT(category) DESC",
+        {"usersID": userID, "year": year},
+    ).fetchall()
+    categories = convertSQLToDict(results)
+
+    totalSpent = 0
+    for categoryExpense in categories:
+        totalSpent += categoryExpense["amount"]
+
+    for category in categories:
+        proportionalAmount = round((category["amount"] / totalSpent) * 100)
+        if proportionalAmount < 1:
+            continue
+        else:
+            categoryTrend["name"] = category["category"]
+            categoryTrend["proportionalAmount"] = proportionalAmount
+            categoryTrend["totalSpent"] = category["amount"]
+            categoryTrend["totalCount"] = category["count"]
+            spending_trends.append(categoryTrend.copy())
+
+    return spending_trends
+
+
+def generateSpendingTrendsReport(userID, year=None):
+    if not year:
+        year = datetime.now().year
+
+    categories = []
+    category = {"name": None, "expenseMonth": 0, "expenseCount": 0, "amount": 0}
+    spending_trends_table = {
+        "January": [],
+        "February": [],
+        "March": [],
+        "April": [],
+        "May": [],
+        "June": [],
+        "July": [],
+        "August": [],
+        "September": [],
+        "October": [],
+        "November": [],
+        "December": [],
+    }
+
+    categories_active = e_categories.getSpendCategories(userID)
+    categories_inactive = e_categories.getSpendCategories_Inactive(userID)
+
+    for activeCategory in categories_active:
+        category["name"] = activeCategory["name"]
+        categories.append(category.copy())
+
+    for inactiveCategory in categories_inactive:
+        category["name"] = inactiveCategory["category"]
+        categories.append(category.copy())
+
+    for month in spending_trends_table.keys():
+        spending_trends_table[month] = copy.deepcopy(categories)
+
+    results = db.execute(
+        "SELECT date_part('month', date(expensedate)) AS monthofcategoryexpense, category AS name, COUNT(category) AS count, SUM(amount) AS amount FROM expenses WHERE user_id = :usersID AND date_part('year', date(expensedate)) = :year GROUP BY date_part('month', date(expensedate)), category ORDER BY COUNT(category) DESC",
+        {"usersID": userID, "year": year},
+    ).fetchall()
+
+    spending_trends_table_query = convertSQLToDict(results)
+
+    for categoryExpense in spending_trends_table_query:
+        monthOfExpense = calendar.month_name[int(categoryExpense["monthofcategoryexpense"])]
+        for category in spending_trends_table[monthOfExpense]:
+            if category["name"] == categoryExpense["name"]:
+                category["expenseMonth"] = categoryExpense["monthofcategoryexpense"]
+                category["expenseCount"] = categoryExpense["count"]
+                category["amount"] = categoryExpense["amount"]
+                break
+            else:
+                continue
+
+    numberOfCategories = len(categories)
+    categoryTotal = 0
+    for i in range(numberOfCategories):
+        for month in spending_trends_table.keys():
+            categoryTotal += spending_trends_table[month][i]["amount"]
+        categories[i]["amount"] = categoryTotal
+        categoryTotal = 0
+
+    spending_trends_chart = getSpendingTrends(userID, year)
+    spendingTrendsReport = {"chart": spending_trends_chart, "table": spending_trends_table, "categories": categories}
+
+    return spendingTrendsReport
