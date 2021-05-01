@@ -65,9 +65,6 @@ def addExpenses(formData, userID):
                 # Add dictionary to list
                 expenses.append(expense.copy())
 
-    print(expense)
-    print(expenses)
-
     for expense in expenses:
         now = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
         db.execute(
