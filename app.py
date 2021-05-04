@@ -285,6 +285,7 @@ def updateaccount():
             "account.html",
             username=user["name"],
             income=user["income"],
+            stats=user["stats"],
             newIncome=alert_updateIncome,
             updatedPassword=alert_updatePassword,
         )
@@ -297,6 +298,7 @@ def updateaccount():
             "account.html",
             username=user["name"],
             income=user["income"],
+            stats=user["stats"],
             newIncome=None,
             updatedPassword=None,
         )

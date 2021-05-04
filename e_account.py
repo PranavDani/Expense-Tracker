@@ -119,15 +119,44 @@ def getBudgets(userID, year=None):
         return None
 
 
+def getStatistics(userID):
+    stats = {"registerDate": None, "totalExpenses": None, "totalBudgets": None, "totalCategories": None}
+
+    registerDate = db.execute("SELECT registerDate FROM users WHERE id = :usersID", {"usersID": userID}).fetchone()[0]
+    stats["registerDate"] = registerDate.split()[0]
+
+    # Get total expenses
+    totalExpenses = db.execute(
+        "SELECT COUNT(*) AS count FROM expenses WHERE user_id = :usersID", {"usersID": userID}
+    ).fetchone()[0]
+    stats["totalExpenses"] = totalExpenses
+
+    # Get total budgets
+    totalBudgets = db.execute(
+        "SELECT COUNT(*) AS count FROM budgets WHERE user_id = :usersID", {"usersID": userID}
+    ).fetchone()[0]
+    stats["totalBudgets"] = totalBudgets
+
+    totalCategories = db.execute(
+        "SELECT COUNT(*) AS count FROM userCategories INNER JOIN categories ON userCategories.category_id = categories.id WHERE userCategories.user_id = :usersID",
+        {"usersID": userID},
+    ).fetchone()[0]
+    stats["totalCategories"] = totalCategories
+
+    return stats
+
+
 def getAllUserInfo(userID):
 
     # Create dict to hold user info
-    user = {"name": None, "income": None}
+    user = {"name": None, "income": None, "stats": None}
 
     # Get the users account name
     user["name"] = getUsername(userID)
 
     # Get the users income
     user["income"] = getIncome(userID)
+
+    user["stats"] = getStatistics(userID)
 
     return user

@@ -61,67 +61,85 @@ block main %}
   </div>
 
   <!-- <div class="row"> -->
-    <div class="col-sm-6">
-      <div class="card bg-danger">
-        <div class="card-body">
-          <h5 class="card-title">Password</h5>
-          <p>Update your password 🔐</p>
-          <p>
-            <a
-              class="btn btn-primary"
-              data-toggle="collapse"
-              href="#collapsePassword"
-              role="button"
-              aria-expanded="false"
-              aria-controls="collapsePassword"
-              >Change Password</a
+  <div class="col-sm-6">
+    <div class="card bg-danger">
+      <div class="card-body">
+        <h5 class="card-title">Password</h5>
+        <p>Update your password 🔐</p>
+        <p>
+          <a
+            class="btn btn-primary"
+            data-toggle="collapse"
+            href="#collapsePassword"
+            role="button"
+            aria-expanded="false"
+            aria-controls="collapsePassword"
+            >Change Password</a
+          >
+        </p>
+      </div>
+      <div class="collapse" id="collapsePassword">
+        <form action="/account" id="updatePassword" method="post">
+          <div class="form-group">
+            <input
+              class="form-control validate-register"
+              name="currentPassword"
+              id="currentPassword"
+              type="password"
+              placeholder="Current password"
+              required
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
+              onkeyup="checkMatch()"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              class="form-control validate-register"
+              name="newPassword"
+              id="newPassword"
+              type="password"
+              placeholder="New password"
+              required
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
+              onkeyup="checkMatch()"
+            />
+            <small class="form-text text-muted" style="margin: 1rem"
+              >Your password is safe with us. We <strong>do not</strong> store
+              plain-text passwords in our database ❤</small
             >
+          </div>
+          <p>
+            <button
+              type="submit"
+              id="btnUpdatePassword"
+              name="btnUpdatePassword"
+              class="btn btn-success"
+            >
+              Save Password
+            </button>
           </p>
-        </div>
-        <div class="collapse" id="collapsePassword">
-          <form action="/account" id="updatePassword" method="post">
-            <div class="form-group">
-              <input
-                class="form-control validate-register"
-                name="currentPassword"
-                id="currentPassword"
-                type="password"
-                placeholder="Current password"
-                required
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
-                onkeyup="checkMatch()"
-              />
-            </div>
-            <div class="form-group">
-              <input
-                class="form-control validate-register"
-                name="newPassword"
-                id="newPassword"
-                type="password"
-                placeholder="New password"
-                required
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
-                onkeyup="checkMatch()"
-              />
-              <small class="form-text text-muted" style="margin: 1rem"
-                >Your password is safe with us. We <strong>do not</strong> store
-                plain-text passwords in our database ❤</small
-              >
-            </div>
-            <p>
-              <button
-                type="submit"
-                id="btnUpdatePassword"
-                name="btnUpdatePassword"
-                class="btn btn-success"
-              >
-                Save Password
-              </button>
-            </p>
-          </form>
-        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card bg-dark">
+      <div class="card-body">
+        <h5 class="card-title">Statistics</h5>
+        <ul style="text-align: left">
+          <li><strong>Member since</strong>: {{ stats["registerDate"] }}</li>
+          <li><strong># of expenses</strong>: {{ stats["totalExpenses"] }}</li>
+          <li><strong># of budgets</strong>: {{ stats["totalBudgets"] }}</li>
+          <li>
+            <strong># of spend categories</strong>: {{ stats["totalCategories"]
+            }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
