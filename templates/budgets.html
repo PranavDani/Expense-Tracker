@@ -43,11 +43,10 @@ Manage Budgets
             <a class="dropdown-item" href="/updatebudget/{{ budget['name'] }}">Update</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#deleteModal"
-              data-budget="{{ budget['name'] }}"
-              data-amount="{{ budget['amount']  }}">Delete</a>
+              data-budget="{{ budget['name'] }}" data-amount="{{ budget['amount']  }}">Delete</a>
           </div>
         </div>
-        <small class="form-text text-muted">Amount: ₹ {{ budget["amount"]  }}</a></small>
+        <small class="form-text text-muted">Amount: ₹ {{ budget["amount"] }}</a></small>
         <br>
         {% endfor %}
         {% else %}

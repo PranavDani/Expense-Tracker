@@ -1,14 +1,8 @@
 {% extends "layout.html" %} {% block styles %}
 <!--Data Tables-->
-<link
-  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
 <!--Data Tables Plugins (export buttons)-->
-<link
-  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />
 <link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
 <!--Responsive Expense Tables-->
 <link href="/static/css/expenses.css" rel="stylesheet" />
@@ -36,11 +30,7 @@ block main %}
     <div class="col">
       <div class="card bg-danger mb-3" style="max-width: 25rem">
         <div class="card-header">
-          <strong
-            ><a href="/updatebudget/{{ budget['name'] }}"
-              >{{ budget["name"] }}</a
-            ></strong
-          >
+          <strong><a href="/updatebudget/{{ budget['name'] }}">{{ budget["name"] }}</a></strong>
         </div>
         <div class="card-body-dash">
           {% set percent = ((budget["spent"] / budget["amount"]) * 100) %} {%
@@ -58,11 +48,7 @@ block main %}
     <div class="col">
       {% if budget["expenses"] %}
       <!--Table functionality courtesty of DataTables.net-->
-      <table
-        id="budgetTable_{{loop.index}}"
-        class="display dataTable"
-        style="width: 100%"
-      >
+      <table id="budgetTable_{{loop.index}}" class="display dataTable" style="width: 100%">
         <thead>
           <tr>
             <th>#</th>

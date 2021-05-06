@@ -1,14 +1,8 @@
 {% extends "layout.html" %} {% block styles %}
 <!--Data Tables-->
-<link
-  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
 <!--Data Tables Plugins (export buttons)-->
-<link
-  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />
 <link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
 <!--Responsive Expense Tables-->
 <link href="/static/css/expenses.css" rel="stylesheet" />
@@ -28,13 +22,8 @@ block main %}
 <br />
 
 <span style="font-weight: bold">Year:</span>
-<select
-  name="year"
-  id="year"
-  class="custom-select"
-  style="width: auto"
-  onchange="window.location = '/monthlyreport/' + this.options[this.selectedIndex].value"
-></select>
+<select name="year" id="year" class="custom-select" style="width: auto"
+  onchange="window.location = '/monthlyreport/' + this.options[this.selectedIndex].value"></select>
 <br /><br />
 
 {% if monthlySpending["chart"] %}

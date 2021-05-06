@@ -1,14 +1,8 @@
 {% extends "layout.html" %} {% block styles %} {% if spending_trends_table %}
 <!--Data Tables-->
-<link
-  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
 <!--Data Tables Plugins (export buttons)-->
-<link
-  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />
 {% endif %}
 
 <link href="/static/css/expenses.css" type="text/css" rel="stylesheet" />
@@ -31,13 +25,8 @@ Report {% endblock %} {% block main %}
 <br />
 
 <span style="font-weight: bold">Year:</span>
-<select
-  name="year"
-  id="year"
-  class="custom-select"
-  style="width: auto"
-  onchange="window.location = '/spendingreport/' + this.options[this.selectedIndex].value"
-></select>
+<select name="year" id="year" class="custom-select" style="width: auto"
+  onchange="window.location = '/spendingreport/' + this.options[this.selectedIndex].value"></select>
 <br /><br />
 
 {% if spending_trends_chart %}
@@ -47,21 +36,15 @@ Report {% endblock %} {% block main %}
     <canvas id="spendingChart" width="400" height="400"></canvas>
   </div>
   <p>
-    <small class="text-light"
-      >Chart note: does not include categories that represent less than 1% of
-      overall spending</small
-    >
+    <small class="text-light">Chart note: does not include categories that represent less than 1% of
+      overall spending</small>
   </p>
 </div>
 <br />
 <br />
 <h3>Total Paid Per Month By Category</h3>
 <div class="table-responsive">
-  <table
-    id="monthlyCategoryExpenses"
-    class="display text-light"
-    style="width: 100%"
-  >
+  <table id="monthlyCategoryExpenses" class="display text-light" style="width: 100%">
     <thead>
       <tr>
         <th>Month</th>

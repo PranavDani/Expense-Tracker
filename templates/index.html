@@ -1,14 +1,6 @@
 {% extends "layout.html" %} {% block styles %}
-<link
-  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"
-  type="text/css"
-  rel="stylesheet"
-/>
-<link
-  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"
-  type="text/css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" type="text/css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" type="text/css" rel="stylesheet" />
 <link href="/static/css/expenses.css" type="text/css" rel="stylesheet" />
 <link href="/static/css/exphistory.css" type="text/css" rel="stylesheet" />
 
@@ -21,63 +13,31 @@
 <br />
 
 <!-- Begin Quick Expense -->
-<button
-  type="button"
-  class="btn btn-outline-primary btn-block btn-lg"
-  data-toggle="modal"
-  data-target="#quickExpenseModal"
->
+<button type="button" class="btn btn-outline-primary btn-block btn-lg" data-toggle="modal"
+  data-target="#quickExpenseModal">
   Quick Expense
 </button>
 
-<div
-  class="modal fade"
-  id="quickExpenseModal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="quickExpenseModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="quickExpenseModal" tabindex="-1" role="dialog" aria-labelledby="quickExpenseModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog text-dark" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="quickExpenseModalLabel">Add Expense</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form action="/" id="quickExpense" method="post" autocomplete="off">
           <div class="form-group">
-            <label for="description" class="col-form-label text-dark"
-              >Description:</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              name="description"
-              id="description"
-              value=""
-              form="quickExpense"
-              maxlength="200"
-              autofocus
-              required
-            />
+            <label for="description" class="col-form-label text-dark">Description:</label>
+            <input type="text" class="form-control" name="description" id="description" value="" form="quickExpense"
+              maxlength="200" autofocus required />
           </div>
           <div class="form-group">
             <label for="category" class="col-form-label">Category:</label>
-            <select
-              id="category"
-              class="form-control-sm"
-              name="category"
-              form="quickExpense"
-              required
-            >
+            <select id="category" class="form-control-sm" name="category" form="quickExpense" required>
               {% for category in categories %}
               <option value="{{ category['name'] }}">
                 {{ category['name'] }}
@@ -87,33 +47,15 @@
           </div>
           <div class="form-group">
             <label for="date" class="col-form-label">Date:</label>
-            <input
-              type="date"
-              class="form-control"
-              name="date"
-              id="date"
-              value="{{ date }}"
-              form="quickExpense"
-              required
-            />
+            <input type="date" class="form-control" name="date" id="date" value="{{ date }}" form="quickExpense"
+              required />
           </div>
           <div class="form-group">
             <label for="amount" class="col-form-label">Amount:</label>
-            <input
-              type="text"
-              class="form-control-sm"
-              name="amount"
-              id="amount"
-              value=""
-              size="10"
-              placeholder="₹"
-              required
-              maxlength="10"
-              pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$"
+            <input type="text" class="form-control-sm" name="amount" id="amount" value="" size="10" placeholder="₹"
+              required maxlength="10" pattern="(?=.*?\d)^(([1-9]\d{0,2}(\d{3})*)|\d+)?(\.\d{1,2})?$"
               title="Format must be currency value without dollar sign or commas e.g. 1, 2.50, 1500.75"
-              form="quickExpense"
-              required
-            />
+              form="quickExpense" required />
           </div>
         </form>
       </div>
@@ -146,11 +88,10 @@
         <div class="card-header"><strong>Remaining Income</strong></div>
         <div class="card-body">
           {% set remainingIncome = (income - expenses_year) %} {% if
-          remainingIncome < 0 %}
-          <h4 class="card-title">₹0</h4>
-          {% else %}
-          <h4 class="card-title">₹ {{ remainingIncome }}</h4>
-          {% endif %}
+          remainingIncome < 0 %} <h4 class="card-title">₹0</h4>
+            {% else %}
+            <h4 class="card-title">₹ {{ remainingIncome }}</h4>
+            {% endif %}
         </div>
       </div>
     </div>
@@ -250,11 +191,7 @@
     <div class="col">
       <div class="card bg-dark mb-3" style="max-width: 14rem">
         <div class="card-header">
-          <strong
-            ><a href="/updatebudget/{{ budget['name'] }}"
-              >{{ budget["name"] }}</a
-            ></strong
-          >
+          <strong><a href="/updatebudget/{{ budget['name'] }}">{{ budget["name"] }}</a></strong>
         </div>
         <div class="card-body-dash">
           {% set percent = ((budget["spent"] / budget["amount"]) * 100) %} {%

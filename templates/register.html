@@ -1,15 +1,8 @@
 {% extends "layout.html" %} {% block title %} Register {% endblock %} {% block
 main %}
 <h2>Budget Tracker</h2>
-<small class="text-muted"><em>Every Penny counts</em></small
-><br />
-<img
-  class="mb-4"
-  src="/static/budget.png"
-  alt="Budget Tracker logo"
-  width="90"
-  height="90"
-/>
+<small class="text-muted"><em>Every Penny counts</em></small><br />
+<img class="mb-4" src="/static/budget.png" alt="Budget Tracker logo" width="90" height="90" />
 
 <br />
 <h1 class="h3 mb-3 font-weight-normal">Register an account</h1>
@@ -22,30 +15,14 @@ main %}
 {% endif %}
 <form action="/register" method="post">
   <div class="form-group">
-    <input
-      autocomplete="off"
-      autofocus
-      class="form-control validate-register"
-      name="username"
-      id="username"
-      type="text"
-      placeholder="Username"
-      required
-      pattern="^[a-zA-Z0-9]{3,16}$"
-      title="Must contain between 3 and 16 characters, lower/uppcase letters and numbers only"
-    />
+    <input autocomplete="off" autofocus class="form-control validate-register" name="username" id="username" type="text"
+      placeholder="Username" required pattern="^[a-zA-Z0-9]{3,16}$"
+      title="Must contain between 3 and 16 characters, lower/uppcase letters and numbers only" />
   </div>
   <div class="form-group">
-    <input
-      class="form-control validate-register"
-      name="password"
-      id="password"
-      type="password"
-      placeholder="Password"
-      required
-      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-      title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter"
-    />
+    <input class="form-control validate-register" name="password" id="password" type="password" placeholder="Password"
+      required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+      title="Length must be at least 8 characters and contain minimum of one number, one lowercase letter, and one uppercase letter" />
     <!-- <small class="form-text text-muted"
       >Your password is safe with us. We <strong>do not</strong> store
       plain-text passwords in our database ❤</small
