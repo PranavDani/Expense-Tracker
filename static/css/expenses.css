@@ -51,7 +51,7 @@ td textarea .selected {
   }
 
   tr:nth-child(even) {
-    background: #e9ecef;
+    background: #000000;
   }
 
   td {
